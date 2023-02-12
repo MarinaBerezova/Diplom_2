@@ -1,6 +1,5 @@
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.Assert;
 import org.junit.Before;
@@ -16,7 +15,7 @@ public class GetUserOrdersTest extends BaseURI {
 
     @Before
     public void setUp() {
-        RestAssured.baseURI = testInstance;
+        setBaseURI();
         generator = new TestDataGenerator();
         step = new UserStep();
         step1 = new OrderStep();
@@ -41,9 +40,9 @@ public class GetUserOrdersTest extends BaseURI {
         step1.sendPOSTOrders(step.checkAccessTokenInResponse(response), step1.getRandom5Ingredients());
         step1.sendPOSTOrders(step.checkAccessTokenInResponse(response), step1.getRandom5Ingredients());
         Response response1 = step1.sendGETUserOrdersList(step.checkAccessTokenInResponse(response));
+        step.clearTestData(response);
         step.checkResponseStatus200(response1);
         step.checkSuccessTrueInResponse(response1);
-        step.clearTestData(response);
     }
 
     @Test
@@ -55,8 +54,8 @@ public class GetUserOrdersTest extends BaseURI {
         step1.sendPOSTOrders(step.checkAccessTokenInResponse(response), step1.getRandom5Ingredients());
         step1.sendPOSTOrders(step.checkAccessTokenInResponse(response), step1.getRandom5Ingredients());
         Orders orders = step1.sendGETUserOrders(step.checkAccessTokenInResponse(response));
-        Assert.assertEquals(2, orders.getOrders().length);
         step.clearTestData(response);
+        Assert.assertEquals(2, orders.getOrders().length);
     }
 
     @Test
@@ -68,9 +67,9 @@ public class GetUserOrdersTest extends BaseURI {
         step1.sendPOSTOrders(step.checkAccessTokenInResponse(response), step1.getRandom5Ingredients());
         step1.sendPOSTOrders(step.checkAccessTokenInResponse(response), step1.getRandom5Ingredients());
         Orders orders = step1.sendGETUserOrders(step.checkAccessTokenInResponse(response));
+        step.clearTestData(response);
         Assert.assertEquals(2, orders.getTotal());
         Assert.assertEquals(2, orders.getTotalToday());
-        step.clearTestData(response);
     }
 
     @Test
@@ -88,9 +87,9 @@ public class GetUserOrdersTest extends BaseURI {
         Orders orders = step1.sendGETUserOrders(step.checkAccessTokenInResponse(response));
         int actualOrderNumber1 = orders.getOrders()[0].getNumber();
         int actualOrderNumber2 = orders.getOrders()[1].getNumber();
+        step.clearTestData(response);
         Assert.assertEquals(orderNumber1, actualOrderNumber1);
         Assert.assertEquals(orderNumber2, actualOrderNumber2);
-        step.clearTestData(response);
     }
 
 }

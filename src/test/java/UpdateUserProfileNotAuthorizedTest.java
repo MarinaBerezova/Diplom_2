@@ -1,6 +1,5 @@
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +30,7 @@ public class UpdateUserProfileNotAuthorizedTest extends BaseURI {
 
     @Before
     public void setUp() {
-        RestAssured.baseURI = testInstance;
+        setBaseURI();
         generator = new TestDataGenerator();
         step = new UserStep();
     }
@@ -43,9 +42,9 @@ public class UpdateUserProfileNotAuthorizedTest extends BaseURI {
         User user = new User(generator.getEmail(), generator.getPassword(), generator.getName());
         Response response1 = step.sendPOSTRegisterUser(user);
         Response response2 = step.sendPATCHUser("", fieldToUpdate, step.updateFieldInUserObject(user, fieldToUpdate));
+        step.clearTestData(response1);
         step.checkResponseStatus401(response2);
         step.checkSuccessFalseInResponse(response2);
         step.checkUserNotAuthorizedMessageInResponse(response2);
-        step.clearTestData(response1);
     }
 }

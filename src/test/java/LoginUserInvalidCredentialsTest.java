@@ -1,6 +1,5 @@
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,7 +37,7 @@ public class LoginUserInvalidCredentialsTest extends BaseURI {
 
     @Before
     public void setUp() {
-        RestAssured.baseURI = testInstance;
+        setBaseURI();
         step = new UserStep();
     }
 
@@ -50,10 +49,10 @@ public class LoginUserInvalidCredentialsTest extends BaseURI {
             Response response1 = step.sendPOSTRegisterUser(user);
             step.checkResponseStatus200(response1);
             Response response2 = step.sendPOSTLoginUser(email, password);
+            step.clearTestData(response1);
             step.checkResponseStatus401(response2);
             step.checkSuccessFalseInResponse(response2);
             step.checkLoginFailedMessageInResponse(response2);
-            step.clearTestData(response1);
             // Workaround для ошибки 429 <Too many requests>, чтобы тесты могли закончить проверку своей функциональности:
             Thread.sleep(100);
     }

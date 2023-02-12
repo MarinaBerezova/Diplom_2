@@ -1,6 +1,5 @@
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,7 +13,7 @@ public class LoginUserTest extends BaseURI {
 
     @Before
     public void setUp() {
-        RestAssured.baseURI = testInstance;
+        setBaseURI();
         generator = new TestDataGenerator();
         step = new UserStep();
     }
@@ -26,11 +25,11 @@ public class LoginUserTest extends BaseURI {
         User user = new User(generator.getEmail(), generator.getPassword(), generator.getName());
         step.sendPOSTRegisterUser(user);
         Response response = step.sendPOSTLoginUser(user);
+        step.clearTestData(response);
         step.checkResponseStatus200(response);
         step.checkSuccessTrueInResponse(response);
         step.checkAccessTokenInResponse(response);
         step.checkRefreshTokenInResponse(response);
         step.checkUserInfoInResponse(user, response);
-        step.clearTestData(response);
     }
 }

@@ -1,6 +1,5 @@
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,7 +13,7 @@ public class RegisterUserTest extends BaseURI {
 
     @Before
     public void setUp() {
-        RestAssured.baseURI = testInstance;
+        setBaseURI();
         generator = new TestDataGenerator();
         step = new UserStep();
     }
@@ -25,11 +24,11 @@ public class RegisterUserTest extends BaseURI {
     public void checkRegisterUserSuccess200() {
         User user = new User(generator.getEmail(), generator.getPassword(), generator.getName());
         Response response = step.sendPOSTRegisterUser(user);
+        step.clearTestData(response);
         step.checkResponseStatus200(response);
         step.checkSuccessTrueInResponse(response);
         step.checkAccessTokenInResponse(response);
         step.checkRefreshTokenInResponse(response);
-        step.clearTestData(response);
     }
 
     @Test
@@ -38,8 +37,8 @@ public class RegisterUserTest extends BaseURI {
     public void checkRegisterUserReturnsNameEmail() {
         User user = new User(generator.getEmail(), generator.getPassword(), generator.getName());
         Response response = step.sendPOSTRegisterUser(user);
-        step.checkUserInfoInResponse(user, response);
         step.clearTestData(response);
+        step.checkUserInfoInResponse(user, response);
     }
 
 
@@ -51,9 +50,9 @@ public class RegisterUserTest extends BaseURI {
         Response response1 = step.sendPOSTRegisterUser(user);
         step.checkResponseStatus200(response1);
         Response response2 = step.sendPOSTRegisterUser(user);
+        step.clearTestData(response1);
         step.checkResponseStatus403(response2);
         step.checkSuccessFalseInResponse(response2);
         step.checkUserExistsMessageInResponse(response2);
-        step.clearTestData(response1);
     }
 }

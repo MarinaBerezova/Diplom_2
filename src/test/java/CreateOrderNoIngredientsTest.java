@@ -1,6 +1,5 @@
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +33,7 @@ public class CreateOrderNoIngredientsTest extends BaseURI {
 
     @Before
     public void setUp() {
-        RestAssured.baseURI = testInstance;
+        setBaseURI();
         generator = new TestDataGenerator();
         step = new UserStep();
         step1 = new OrderStep();
@@ -53,9 +52,9 @@ public class CreateOrderNoIngredientsTest extends BaseURI {
         } else {
             response1 = step1.sendPOSTOrders("", emptyList);
         }
+        step.clearTestData(response);
         step1.checkResponseStatus400(response1);
         step.checkSuccessFalseInResponse(response1);
         step1.checkNoIngredientsMessageInResponse(response1);
-        step.clearTestData(response);
     }
 }

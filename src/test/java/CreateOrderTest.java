@@ -1,6 +1,5 @@
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.Assert;
 import org.junit.Before;
@@ -18,7 +17,7 @@ public class CreateOrderTest extends BaseURI {
 
     @Before
     public void setUp() {
-        RestAssured.baseURI = testInstance;
+        setBaseURI();
         generator = new TestDataGenerator();
         step = new UserStep();
         step1 = new OrderStep();
@@ -49,10 +48,10 @@ public class CreateOrderTest extends BaseURI {
         User user = new User(generator.getEmail(), generator.getPassword(), generator.getName());
         Response response = step.sendPOSTRegisterUser(user);
         Response response1 = step1.sendPOSTOrders(step.checkAccessTokenInResponse(response), step1.getRandom5Ingredients());
+        step.clearTestData(response);
         step.checkResponseStatus200(response1);
         step.checkSuccessTrueInResponse(response1);
         step1.checkOrderNumberInResponse(response1);
-        step.clearTestData(response);
     }
 
     @Test
@@ -62,8 +61,8 @@ public class CreateOrderTest extends BaseURI {
         User user = new User(generator.getEmail(), generator.getPassword(), generator.getName());
         Response response = step.sendPOSTRegisterUser(user);
         Response response1 = step1.sendPOSTOrders(step.checkAccessTokenInResponse(response), step1.getRandom5Ingredients());
-        step1.checkBurgerNameInResponse(response1);
         step.clearTestData(response);
+        step1.checkBurgerNameInResponse(response1);
     }
 
     @Test
@@ -75,8 +74,8 @@ public class CreateOrderTest extends BaseURI {
         ArrayList<String> desiredIngredients = step1.getRandom5Ingredients();
         Response response1 = step1.sendPOSTOrders(step.checkAccessTokenInResponse(response), desiredIngredients);
         ArrayList<String> actualIngredients= step1.extractIngredientsFromResponse(response1);
-        Assert.assertEquals(desiredIngredients, actualIngredients);
         step.clearTestData(response);
+        Assert.assertEquals(desiredIngredients, actualIngredients);
     }
 
     @Test
@@ -86,8 +85,8 @@ public class CreateOrderTest extends BaseURI {
         User user = new User(generator.getEmail(), generator.getPassword(), generator.getName());
         Response response = step.sendPOSTRegisterUser(user);
         Response response1 = step1.sendPOSTOrders(step.checkAccessTokenInResponse(response), step1.getRandom5Ingredients());
+        step.clearTestData(response);
         Assert.assertEquals(generator.getName(), response1.then().extract().path("order.owner.name"));
         Assert.assertEquals(generator.getEmail(), response1.then().extract().path("order.owner.email"));
-        step.clearTestData(response);
     }
 }

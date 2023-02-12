@@ -1,6 +1,5 @@
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +30,7 @@ public class UpdateUserProfileTest extends BaseURI {
 
     @Before
     public void setUp() {
-        RestAssured.baseURI = testInstance;
+        setBaseURI();
         generator = new TestDataGenerator();
         step = new UserStep();
     }
@@ -48,8 +47,8 @@ public class UpdateUserProfileTest extends BaseURI {
         step.checkUserInfoInResponse(user, response2);
         // Проверка логина обновленного юзера:
         Response response3 = step.sendPOSTLoginUser(user);
-        step.checkResponseStatus200(response3);
         step.clearTestData(response3);
+        step.checkResponseStatus200(response3);
         // Workaround для ошибки 429 <Too many requests>, чтобы тесты могли закончить проверку своей функциональности:
         Thread.sleep(100);
     }
